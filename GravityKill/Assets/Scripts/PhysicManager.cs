@@ -29,9 +29,11 @@ public class PhysicManager : MonoBehaviour {
 		GameObject baliseContainer = GameObject.Find ("baliseContainer");
 		for (int i = 0; i < baliseContainer.transform.childCount; i++) {
 			GameObject child = baliseContainer.transform.GetChild (i).gameObject;
-			Vector3 dir = (child.transform.position - this.transform.position).normalized; // Direction de la force
-			dir *= child.GetComponent<BaliseManager>().puissance; // Rajout de la puissance de la force
-			force += dir;
+			if (child.activeSelf) {
+				Vector3 dir = (child.transform.position - this.transform.position).normalized; // Direction de la force
+				dir *= child.GetComponent<BaliseManager>().puissance; // Rajout de la puissance de la force
+				force += dir;
+			}
 		}
 		return force;
 	}
