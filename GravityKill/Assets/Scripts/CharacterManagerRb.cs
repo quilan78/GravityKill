@@ -2,25 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterManager : MonoBehaviour {
+public class CharacterManagerRb : MonoBehaviour {
 
-	CharacterController controller;
+	Rigidbody rigidbody;
 	public float speed= 0.1f;
 	public float sensibilite = 0.1f;
 	public float intensiteGravite = 0.1f;
 	public float jumpspeed = 10f;
 	public Vector3 g = new Vector3();
-	float mouseX =0;
-	float mouseY = 0;
 
 	Quaternion rotationDep;
 	Quaternion rotationArr;
-	bool isRotating = false;
-	float step;
 	public float SensibiliteRotation = 0.1f;
 	// Use this for initialization
 	void Start () {
-		controller = GetComponent<CharacterController>();
+		rigidbody = GetComponent<Rigidbody>();
 		Cursor.lockState = CursorLockMode.Locked;
 	}
 
@@ -74,21 +70,21 @@ public class CharacterManager : MonoBehaviour {
 			//this.transform.GetChild (0).LookAt (toLook);
 		}
 		if (Input.GetKey (KeyCode.Z)) {
-			controller.Move (speed * transform.GetChild(0).forward);
+			rigidbody.AddForce (speed * transform.GetChild(0).forward);
 		}
 		if (Input.GetKey (KeyCode.Q)) {
-			controller.Move (speed *  -transform.GetChild(0).right);
+			rigidbody.AddForce (speed *  -transform.GetChild(0).right);
 		}
 		if (Input.GetKey (KeyCode.D)) {
-			controller.Move (speed * transform.GetChild(0).right);
+			rigidbody.AddForce (speed * transform.GetChild(0).right);
 		}
 		if (Input.GetKey (KeyCode.S)) {
-			controller.Move (speed *  -transform.GetChild(0).forward);
+			rigidbody.AddForce (speed *  -transform.GetChild(0).forward);
 		}
 		if (Input.GetKeyDown (KeyCode.Space)) {
-			controller.Move (jumpspeed * transform.up);
+			rigidbody.AddForce (jumpspeed * transform.up);
 		}
-		controller.Move (intensiteGravite * g.normalized);
+		rigidbody.AddForce (intensiteGravite * g.normalized);
 		float deltaX = Input.GetAxis("Mouse X");
 		float deltaY = Input.GetAxis("Mouse Y");
 
@@ -110,6 +106,6 @@ public class CharacterManager : MonoBehaviour {
 		// Si on regarde trop haut ou trop bas on annule la rotation
 		if ( Vector3.Angle(this.transform.GetChild(0).GetChild(0).forward, this.transform.up) < 10 || Vector3.Angle(this.transform.GetChild(0).GetChild(0).forward, -this.transform.up) < 10 ) 
 			this.transform.GetChild (0).GetChild(0).Rotate (new Vector3 (sensibilite*deltaY, 0, 0), Space.Self);
-			
+
 	}
 }
