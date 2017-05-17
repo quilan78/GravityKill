@@ -14,12 +14,19 @@ public class Health : MonoBehaviour {
         if (hp <= 0)
         {
             hp = maxHealth;
-            respawn();
+            deathScreen();
         }
     }
 
-    public void respawn()
+    private void respawn()
     {
+        // on pourrait par exemple faire un pool de respawnpoint dans une ArrayList et faire un Random.Range tavu
         //transform.position = this.GetComponent<CharacterManagerCh>().respawnPos;
+    }
+
+    private void deathScreen()
+    {
+        // faire un truc de daube kan tu crèves avec des particules xd genre passer en 3rd person
+        respawn();
     }
 }
