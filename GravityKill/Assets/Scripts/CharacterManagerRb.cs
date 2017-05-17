@@ -5,86 +5,96 @@ using UnityEngine;
 public class CharacterManagerRb : MonoBehaviour {
 
 	Rigidbody rigidbody;
-	public float speed= 0.1f;
-	public float sensibilite = 0.1f;
-	public float intensiteGravite = 0.1f;
-	public float jumpspeed = 10f;
+	public float speed= 1f;
+	public float sensibilite = 2f;
+	public float intensiteGravite = 10f;
+	public float jumpspeed = 20f;
 	public Vector3 g = new Vector3();
+
+    bool[] moving = new bool[4];
 
 	Quaternion rotationDep;
 	Quaternion rotationArr;
 	public float SensibiliteRotation = 0.1f;
 	// Use this for initialization
 	void Start () {
-		rigidbody = GetComponent<Rigidbody>();
-		Cursor.lockState = CursorLockMode.Locked;
+        //rigidbody = this.transform.GetChild(0).GetComponent<Rigidbody>();
+        rigidbody = this.GetComponent<Rigidbody>();
+        Cursor.lockState = CursorLockMode.Locked;
+
+        for(int i=0; i<4; i++)
+        {
+            moving[i] = false;
+        }
 	}
 
-	// Update is called once per frame
-	void FixedUpdate () {
-		if (transform.up != -g && g != Vector3.zero) {
-			rotationDep = transform.rotation;
+    // Update is called once per frame
+    void FixedUpdate() {
+        if (transform.up != -g && g != Vector3.zero) {
+            rotationDep = transform.rotation;
 
-			/*Debug.Log (transform.forward);
-			Debug.Log (transform.right);
-			Debug.Log (g);
-
-			if (g == this.transform.forward) {
-				transform.Rotate (this.transform.right, 90);
-				rotationArr = transform.rotation;
-				transform.Rotate (this.transform.right, 90);
-			}
-			if ( g == -this.transform.forward) {
-				transform.Rotate (this.transform.right, 90);
-				rotationArr = transform.rotation;
-				transform.Rotate (-this.transform.right, 90);
-			}
-			if (g == this.transform.right) {
-				transform.Rotate (this.transform.forward, 90);
-				rotationArr = transform.rotation;
-				transform.Rotate (-this.transform.forward, 90);
-			}
-			if (g == -this.transform.right) {
-				transform.Rotate (-this.transform.forward, 90);
-				rotationArr = transform.rotation;
-				transform.Rotate (this.transform.forward, 90);
-			}
-			if (g == this.transform.up) {
-				transform.Rotate (this.transform.forward, 180);
-				rotationArr = transform.rotation;
-				transform.Rotate (-this.transform.forward, 180);
-			}*/
-			Vector3 save = transform.up;
-			Vector3 save2 = transform.forward;
-			this.transform.up = -g;
-			bool rot = false;
-			if (this.transform.forward == -save2) {
-				transform.Rotate (this.transform.up, 180);
-				rot = true;
-			}
-			rotationArr = transform.rotation;
-			if ( rot ) 
-				transform.Rotate (this.transform.up, 180);
-			transform.up = save;
-			transform.rotation = Quaternion.Lerp (rotationDep, rotationArr, SensibiliteRotation);
-			//this.transform.GetChild (0).LookAt (toLook);
+            Vector3 save = transform.up;
+            Vector3 save2 = transform.forward;
+            this.transform.up = -g;
+            bool rot = false;
+            if (this.transform.forward == -save2) {
+                transform.Rotate(this.transform.up, 180);
+                rot = true;
+            }
+            rotationArr = transform.rotation;
+            if (rot)
+                transform.Rotate(this.transform.up, 180);
+            transform.up = save;
+            transform.rotation = Quaternion.Lerp(rotationDep, rotationArr, SensibiliteRotation);
+            //this.transform.GetChild (0).LookAt (toLook);
+        }
+        Vector3 dirForce = new Vector3();
+        Vector3 slowForce = new Vector3();
+        if (Input.GetKey(KeyCode.Z) && !moving[0]) {
+            moving[0] = true;
+            dirForce += transform.GetChild(0).forward;
 		}
-		if (Input.GetKey (KeyCode.Z)) {
-			rigidbody.AddForce (speed * transform.GetChild(0).forward);
+        else if (!Input.GetKey(KeyCode.Z))
+        {
+            moving[0] = false;
+            slowForce -= transform.GetChild(0).forward;
+        }
+		if (Input.GetKey (KeyCode.Q) && !moving[1])
+        {
+            moving[1] = true;
+            dirForce += -transform.GetChild(0).right;
 		}
-		if (Input.GetKey (KeyCode.Q)) {
-			rigidbody.AddForce (speed *  -transform.GetChild(0).right);
+        else if (!Input.GetKey(KeyCode.Q))
+        {
+            moving[1] = false;
+            slowForce -= -transform.GetChild(0).right;
+        }
+        if (Input.GetKey (KeyCode.D) && !moving[2])
+        {
+            moving[2] = true;
+            dirForce += transform.GetChild(0).right;
 		}
-		if (Input.GetKey (KeyCode.D)) {
-			rigidbody.AddForce (speed * transform.GetChild(0).right);
+        else if (!Input.GetKey(KeyCode.D))
+        {
+            moving[2] = false;
+            slowForce -= transform.GetChild(0).right;
+        }
+        if (Input.GetKey (KeyCode.S) && !moving[3])
+        {
+            moving[3] = true;
+            dirForce += -transform.GetChild(0).forward;
 		}
-		if (Input.GetKey (KeyCode.S)) {
-			rigidbody.AddForce (speed *  -transform.GetChild(0).forward);
+        else if (!Input.GetKey(KeyCode.S))
+        {
+            moving[3] = false;
+            slowForce -= -transform.GetChild(0).forward;
+        }
+        if (Input.GetKeyDown (KeyCode.Space)) {
+			rigidbody.AddForce (jumpspeed * transform.up, ForceMode.Impulse);
 		}
-		if (Input.GetKeyDown (KeyCode.Space)) {
-			rigidbody.AddForce (jumpspeed * transform.up);
-		}
-		rigidbody.AddForce (intensiteGravite * g.normalized);
+        rigidbody.AddForce(speed *  dirForce.normalized, ForceMode.VelocityChange);
+        rigidbody.AddForce (intensiteGravite * g.normalized);
+        rigidbody.AddForce(speed * slowForce * Vector3.Dot(slowForce, rigidbody.velocity));
 		float deltaX = Input.GetAxis("Mouse X");
 		float deltaY = Input.GetAxis("Mouse Y");
 
