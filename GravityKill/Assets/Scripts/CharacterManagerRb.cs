@@ -11,6 +11,9 @@ public class CharacterManagerRb : MonoBehaviour {
 	public float jumpspeed = 20f;
 	public Vector3 g = new Vector3();
 
+    private Transform camera;
+    private Transform weapon;
+
     bool[] moving = new bool[4];
 
 	Quaternion rotationDep;
@@ -20,6 +23,8 @@ public class CharacterManagerRb : MonoBehaviour {
 	void Start () {
         //rigidbody = this.transform.GetChild(0).GetComponent<Rigidbody>();
         rigidbody = this.GetComponent<Rigidbody>();
+        camera = this.transform.GetChild(4);
+        weapon = this.transform.GetChild(1);
         Cursor.lockState = CursorLockMode.Locked;
 
         for(int i=0; i<4; i++)
@@ -52,42 +57,42 @@ public class CharacterManagerRb : MonoBehaviour {
         Vector3 slowForce = new Vector3();
         if (Input.GetKey(KeyCode.Z) && !moving[0]) {
             moving[0] = true;
-            dirForce += transform.GetChild(0).forward;
+            dirForce += transform.forward;
 		}
         else if (!Input.GetKey(KeyCode.Z))
         {
             moving[0] = false;
-            slowForce -= transform.GetChild(0).forward;
+            slowForce -= transform.forward;
         }
 		if (Input.GetKey (KeyCode.Q) && !moving[1])
         {
             moving[1] = true;
-            dirForce += -transform.GetChild(0).right;
+            dirForce += -transform.right;
 		}
         else if (!Input.GetKey(KeyCode.Q))
         {
             moving[1] = false;
-            slowForce -= -transform.GetChild(0).right;
+            slowForce -= -transform.right;
         }
         if (Input.GetKey (KeyCode.D) && !moving[2])
         {
             moving[2] = true;
-            dirForce += transform.GetChild(0).right;
+            dirForce += transform.right;
 		}
         else if (!Input.GetKey(KeyCode.D))
         {
             moving[2] = false;
-            slowForce -= transform.GetChild(0).right;
+            slowForce -= transform.right;
         }
         if (Input.GetKey (KeyCode.S) && !moving[3])
         {
             moving[3] = true;
-            dirForce += -transform.GetChild(0).forward;
+            dirForce += -transform.forward;
 		}
         else if (!Input.GetKey(KeyCode.S))
         {
             moving[3] = false;
-            slowForce -= -transform.GetChild(0).forward;
+            slowForce -= -transform.forward;
         }
         if (Input.GetKeyDown (KeyCode.Space)) {
 			rigidbody.AddForce (jumpspeed * transform.up, ForceMode.Impulse);
@@ -111,11 +116,12 @@ public class CharacterManagerRb : MonoBehaviour {
 			g = new Vector3 (-1, 0, 0);
 		}
 
-		this.transform.GetChild (0).Rotate(new Vector3(0, sensibilite*deltaX, 0), Space.Self);
-		this.transform.GetChild (0).GetChild(0).Rotate (new Vector3 (sensibilite*-deltaY, 0, 0), Space.Self);
+	    transform.Rotate(new Vector3(0, sensibilite*deltaX, 0), Space.Self);
+		camera.Rotate (new Vector3 (sensibilite*-deltaY, 0, 0), Space.Self);
 		// Si on regarde trop haut ou trop bas on annule la rotation
-		if ( Vector3.Angle(this.transform.GetChild(0).GetChild(0).forward, this.transform.up) < 10 || Vector3.Angle(this.transform.GetChild(0).GetChild(0).forward, -this.transform.up) < 10 ) 
-			this.transform.GetChild (0).GetChild(0).Rotate (new Vector3 (sensibilite*deltaY, 0, 0), Space.Self);
-
+		if ( Vector3.Angle(camera.forward, this.transform.up) < 10 || Vector3.Angle(camera.forward, -this.transform.up) < 10 ) 
+			camera.Rotate (new Vector3 (sensibilite*deltaY, 0, 0), Space.Self);
+        weapon.rotation = camera.rotation;
+        weapon.Rotate(new Vector3(90, 0, 0));
 	}
 }
