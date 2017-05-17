@@ -20,6 +20,10 @@ public class CharacterManagerCh : MonoBehaviour {
 	public float incrementChute = 0.1f;
 	public float incrementMaxChute = 3.0f;
 
+    public GameObject bulletGO;
+    public Transform bulletPos;
+    public float bulletSpeed;
+
 	// Use this for initialization
 	void Start () {
 		controller = GetComponent<CharacterController>();
@@ -129,4 +133,24 @@ public class CharacterManagerCh : MonoBehaviour {
 			this.transform.GetChild (0).GetChild(0).Rotate (new Vector3 (sensibilite*deltaY, 0, 0), Space.Self);
 
 	}
+
+    void Update()
+    {
+        if(Input.GetKeyDown(0))
+        {
+            Shoot();
+        }
+    }
+
+    void Shoot()
+    {
+        // on crée une bullet, on pourrait faire du pooling
+        var bullet = (GameObject)Instantiate(bulletGO, bulletPos.position, bulletPos.rotation);
+        // ça part en tout droit + vitesse tmtc
+        bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * bulletSpeed;
+        // destroy au bout de 2s, on pourrait faire 2s après impact.
+        Destroy(bullet, 2.0f);
+    }
+
+
 }
