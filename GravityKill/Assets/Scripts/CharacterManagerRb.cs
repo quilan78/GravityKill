@@ -10,6 +10,8 @@ public class CharacterManagerRb : MonoBehaviour {
 	public float intensiteGravite = 10f;
 	public float jumpspeed = 20f;
 	public Vector3 g = new Vector3();
+    Vector3 lastMoving = new Vector3();
+    Vector3 dir = new Vector3();
 
     bool[] moving = new bool[4];
 
@@ -29,7 +31,8 @@ public class CharacterManagerRb : MonoBehaviour {
 	}
 
     // Update is called once per frame
-    void FixedUpdate() {
+    void Update() {
+        
         if (transform.up != -g && g != Vector3.zero) {
             rotationDep = transform.rotation;
 
@@ -50,51 +53,25 @@ public class CharacterManagerRb : MonoBehaviour {
         }
         Vector3 dirForce = new Vector3();
         Vector3 slowForce = new Vector3();
-        if (Input.GetKey(KeyCode.Z) && !moving[0]) {
-            moving[0] = true;
-            dirForce += transform.GetChild(0).forward;
+        dir = Vector3.zero;
+        if (Input.GetKey(KeyCode.Z)) {
+            dir.z += 1;
 		}
-        else if (!Input.GetKey(KeyCode.Z))
+		if (Input.GetKey(KeyCode.Q))
         {
-            moving[0] = false;
-            slowForce -= transform.GetChild(0).forward;
+            dir.x -= 1;
+		}
+        if (Input.GetKey(KeyCode.D))
+        {
+            dir.x += 1;
         }
-		if (Input.GetKey (KeyCode.Q) && !moving[1])
+        if (Input.GetKey(KeyCode.S))
         {
-            moving[1] = true;
-            dirForce += -transform.GetChild(0).right;
-		}
-        else if (!Input.GetKey(KeyCode.Q))
-        {
-            moving[1] = false;
-            slowForce -= -transform.GetChild(0).right;
-        }
-        if (Input.GetKey (KeyCode.D) && !moving[2])
-        {
-            moving[2] = true;
-            dirForce += transform.GetChild(0).right;
-		}
-        else if (!Input.GetKey(KeyCode.D))
-        {
-            moving[2] = false;
-            slowForce -= transform.GetChild(0).right;
-        }
-        if (Input.GetKey (KeyCode.S) && !moving[3])
-        {
-            moving[3] = true;
-            dirForce += -transform.GetChild(0).forward;
-		}
-        else if (!Input.GetKey(KeyCode.S))
-        {
-            moving[3] = false;
-            slowForce -= -transform.GetChild(0).forward;
+            dir.z -= 1;
         }
         if (Input.GetKeyDown (KeyCode.Space)) {
 			rigidbody.AddForce (jumpspeed * transform.up, ForceMode.Impulse);
 		}
-        rigidbody.AddForce(speed *  dirForce.normalized, ForceMode.VelocityChange);
-        rigidbody.AddForce (intensiteGravite * g.normalized);
-        rigidbody.AddForce(speed * slowForce * Vector3.Dot(slowForce, rigidbody.velocity));
 		float deltaX = Input.GetAxis("Mouse X");
 		float deltaY = Input.GetAxis("Mouse Y");
 
@@ -118,4 +95,20 @@ public class CharacterManagerRb : MonoBehaviour {
 			this.transform.GetChild (0).GetChild(0).Rotate (new Vector3 (sensibilite*deltaY, 0, 0), Space.Self);
 
 	}
+
+    void FixedUpdate()
+    {
+        Debug.Log(dir);
+        //rigidbody.velocity -= Vector3.Dot(rigidbody.velocity, transform.GetChild(0).right) * transform.GetChild(0).right + Vector3.Dot(rigidbody.velocity, transform.GetChild(0).forward) * transform.GetChild(0).forward;
+        Vector3 going = transform.GetChild(0).right * dir.x + transform.GetChild(0).forward * dir.z;
+        //rigidbody.velocity += intensiteGravite * g.normalized * Time.deltaTime;
+        //rigidbody.velocity += speed * going.normalized * Time.deltaTime;
+        //lastdir = dir;
+        rigidbody.AddForce(-speed * lastMoving.normalized, ForceMode.Impulse);
+        rigidbody.AddForce(speed * going.normalized, ForceMode.Impulse);
+        rigidbody.AddForce(intensiteGravite * g.normalized, ForceMode.Impulse);
+        lastMoving = going;
+        //rigidbody.AddForce(speed * slowForce * Vector3.Dot(slowForce, rigidbody.velocity))
+    }
+    
 }
