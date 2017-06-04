@@ -50,44 +50,44 @@ public class CharacterManagerRb : MonoBehaviour {
         }
         Vector3 dirForce = new Vector3();
         Vector3 slowForce = new Vector3();
-        if (Input.GetKey(KeyCode.Z) && !moving[0]) {
+        if (Input.GetKeyDown(KeyCode.Z) && !moving[0]) {
             moving[0] = true;
             dirForce += transform.GetChild(0).forward;
 		}
-        else if (!Input.GetKey(KeyCode.Z))
+        if (Input.GetKeyUp(KeyCode.Z))
         {
             moving[0] = false;
-            slowForce -= transform.GetChild(0).forward;
+            dirForce -= transform.GetChild(0).forward;
         }
-		if (Input.GetKey (KeyCode.Q) && !moving[1])
+		if (Input.GetKeyDown(KeyCode.Q) && !moving[1])
         {
             moving[1] = true;
             dirForce += -transform.GetChild(0).right;
 		}
-        else if (!Input.GetKey(KeyCode.Q))
+        if (Input.GetKeyUp(KeyCode.Q))
         {
             moving[1] = false;
-            slowForce -= -transform.GetChild(0).right;
+            dirForce -= -transform.GetChild(0).right;
         }
-        if (Input.GetKey (KeyCode.D) && !moving[2])
+        if (Input.GetKeyDown(KeyCode.D) && !moving[2])
         {
             moving[2] = true;
             dirForce += transform.GetChild(0).right;
 		}
-        else if (!Input.GetKey(KeyCode.D))
+        if (Input.GetKeyUp(KeyCode.D))
         {
             moving[2] = false;
-            slowForce -= transform.GetChild(0).right;
+            dirForce -= transform.GetChild(0).right;
         }
-        if (Input.GetKey (KeyCode.S) && !moving[3])
+        if (Input.GetKeyDown(KeyCode.S) && !moving[3])
         {
             moving[3] = true;
             dirForce += -transform.GetChild(0).forward;
 		}
-        else if (!Input.GetKey(KeyCode.S))
+       if (Input.GetKeyUp(KeyCode.S))
         {
             moving[3] = false;
-            slowForce -= -transform.GetChild(0).forward;
+            dirForce -= -transform.GetChild(0).forward;
         }
         if (Input.GetKeyDown (KeyCode.Space)) {
 			rigidbody.AddForce (jumpspeed * transform.up, ForceMode.Impulse);
