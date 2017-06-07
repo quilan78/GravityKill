@@ -33,24 +33,7 @@ public class CharacterManagerRb : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         
-        if (transform.up != -g && g != Vector3.zero) {
-            rotationDep = transform.rotation;
-
-            Vector3 save = transform.up;
-            Vector3 save2 = transform.forward;
-            this.transform.up = -g;
-            bool rot = false;
-            if (this.transform.forward == -save2) {
-                transform.Rotate(this.transform.up, 180);
-                rot = true;
-            }
-            rotationArr = transform.rotation;
-            if (rot)
-                transform.Rotate(this.transform.up, 180);
-            transform.up = save;
-            transform.rotation = Quaternion.Lerp(rotationDep, rotationArr, SensibiliteRotation);
-            //this.transform.GetChild (0).LookAt (toLook);
-        }
+       
         Vector3 dirForce = new Vector3();
         Vector3 slowForce = new Vector3();
 
@@ -99,6 +82,27 @@ public class CharacterManagerRb : MonoBehaviour {
 
     void FixedUpdate()
     {
+        if (transform.up != -g && g != Vector3.zero)
+        {
+            rotationDep = transform.rotation;
+
+            Vector3 save = transform.up;
+            Vector3 save2 = transform.forward;
+            this.transform.up = -g;
+            bool rot = false;
+            if (this.transform.forward == -save2)
+            {
+                transform.Rotate(this.transform.up, 180);
+                rot = true;
+            }
+            rotationArr = transform.rotation;
+            if (rot)
+                transform.Rotate(this.transform.up, 180);
+            transform.up = save;
+            transform.rotation = Quaternion.Lerp(rotationDep, rotationArr, SensibiliteRotation);
+            //this.transform.GetChild (0).LookAt (toLook);
+        }
+
         Debug.Log(dir);
         //rigidbody.velocity -= Vector3.Dot(rigidbody.velocity, transform.GetChild(0).right) * transform.GetChild(0).right + Vector3.Dot(rigidbody.velocity, transform.GetChild(0).forward) * transform.GetChild(0).forward;
         Vector3 going = transform.GetChild(0).right * dir.x + transform.GetChild(0).forward * dir.z;
